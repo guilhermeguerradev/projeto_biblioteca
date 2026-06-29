@@ -19,7 +19,7 @@ public class Aluno {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name ="usuario_id", nullable = false, unique = true)
+    @JoinColumn(name ="id")
     private Usuario usuario;
 
     @JoinColumn(nullable = false, unique = true)
@@ -29,9 +29,5 @@ public class Aluno {
 
     @JoinColumn(nullable = false)
     private byte periodo;
-
-
-
-
 
 }

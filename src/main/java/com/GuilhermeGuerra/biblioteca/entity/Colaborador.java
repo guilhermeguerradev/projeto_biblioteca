@@ -23,7 +23,7 @@ public class Colaborador {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name ="usuario_id", nullable = false, unique = true)
+    @JoinColumn(name ="id")
     private Usuario usuario;
 
     @Enumerated(EnumType.STRING)

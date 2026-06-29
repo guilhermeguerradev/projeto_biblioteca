@@ -1,6 +1,5 @@
 create table aluno (
-    id serial primary key,
-    usuario_id int not null unique,
+    id int primary key references usuario(id) on delete casacade,
     matricula varchar(255) not null unique,
     curso varchar(255),
     periodo smallint not null,
@@ -11,8 +10,7 @@ create table aluno (
 );
 
 create table professor(
-    id serial primary key,
-    usuario_id int not null unique,
+    id int primary key references usuario(id) on delete casacade,
     siape varchar(255) not null unique,
     departamento varchar(255),
     titulacao varchar(255),
@@ -23,9 +21,7 @@ create table professor(
 );
 
 create table colaborador(
-    id serial primary key,
-
-    usuario_id int not null unique,
+    id int primary key references usuario(id) on delete casacade,
 
     cargo varchar(30) not null check (
         cargo in ( 'BIBLIOTECARIO', 'AUXILIAR', 'ADMINISTRADOR')),

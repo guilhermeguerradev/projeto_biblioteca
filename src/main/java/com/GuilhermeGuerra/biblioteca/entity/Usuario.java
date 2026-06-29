@@ -8,7 +8,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -54,5 +56,13 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario", fetch =  FetchType.LAZY)
     private List<Emprestimo> emprestimos = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "usuario_roles",
+            joinColumns = @JoinColumn(name = "usuario_id")
+    )
+    @Column(name = "role", length = 30)
+    private Set<String> roles = new HashSet<>();
 
 }

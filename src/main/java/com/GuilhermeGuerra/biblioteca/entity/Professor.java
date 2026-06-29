@@ -20,7 +20,7 @@ public class Professor {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name ="usuario_id", nullable = false, unique = true)
+    @JoinColumn(name ="id")
     private Usuario usuario;
 
     @Column(nullable = false, unique = true)
