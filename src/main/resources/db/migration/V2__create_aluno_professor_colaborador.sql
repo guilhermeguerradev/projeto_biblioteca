@@ -3,7 +3,7 @@ create table aluno (
     usuario_id int not null unique,
     matricula varchar(255) not null unique,
     curso varchar(255),
-    periodo int not null,
+    periodo smallint not null,
 
     constraint fk_aluno_usuario foreign key (usuario_id)
                    references usuario (id) on delete cascade
