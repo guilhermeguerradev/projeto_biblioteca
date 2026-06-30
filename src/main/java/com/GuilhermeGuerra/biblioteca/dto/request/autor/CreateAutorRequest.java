@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request;
+package com.GuilhermeGuerra.biblioteca.dto.request.autor;
 
 import jakarta.validation.constraints.NotBlank;
 
