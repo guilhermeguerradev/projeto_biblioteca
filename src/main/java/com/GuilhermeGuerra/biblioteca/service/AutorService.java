@@ -27,6 +27,12 @@ public class AutorService {
                 .toList();
         return autores;
     }
+
+    @Transactional(readOnly = true)
+    public List<Autor> findAllById(List<Long> ids) {
+        return autorRepository.findAllById(ids);
+    }
+
     @Transactional(readOnly = true)
     public AutorResponse findById(Long id) {
         Autor autor = autorRepository.findById(id)

@@ -21,6 +21,14 @@ public class EditoraService {
     private final EditoraRepository editoraRepository;
 
     @Transactional(readOnly = true)
+    public Editora buscarReferenciaPorId(Long id) {
+        if(!editoraRepository.existsById(id)) {
+            throw new EditoraNotFoundException("Editora não encontrada");
+        }
+        return editoraRepository.getReferenceById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<EditoraResponse> findAll() {
         return editoraRepository.findAll().stream().map(EditoraResponse::fromEntity).toList();
     }

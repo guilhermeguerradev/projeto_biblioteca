@@ -26,6 +26,11 @@ public class CategoriaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Categoria> findAllById(List<Long> ids) {
+        return categoriaRepository.findAllById(ids);
+    }
+
+    @Transactional(readOnly = true)
     public CategoriaResponse findById(Long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
