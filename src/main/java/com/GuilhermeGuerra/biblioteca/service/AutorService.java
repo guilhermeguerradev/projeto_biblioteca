@@ -9,6 +9,7 @@ import com.GuilhermeGuerra.biblioteca.exceptions.AutorNotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.AutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class AutorService {
 
     private final AutorRepository autorRepository;
 
+    @Transactional(readOnly = true)
     public List<AutorResponse> findAll() {
         List<AutorResponse> autores = autorRepository.findAll()
                 .stream()
@@ -25,7 +27,7 @@ public class AutorService {
                 .toList();
         return autores;
     }
-
+    @Transactional(readOnly = true)
     public AutorResponse findById(Long id) {
         Autor autor = autorRepository.findById(id)
                 .orElseThrow(() -> new AutorNotFoundException("Autor não encontrado"));
@@ -33,7 +35,7 @@ public class AutorService {
         return AutorResponse.fromEntity(autor);
     }
 
-
+    @Transactional
     public AutorResponse create(CreateAutorRequest request) {
 
         if(autorRepository.existsByNome(request.nome())) {
@@ -51,6 +53,7 @@ public class AutorService {
 
     }
 
+    @Transactional
     public AutorResponse update(Long id,UpdateAutorRequest request) {
 
         Autor autor = autorRepository.findById(id)
@@ -69,6 +72,7 @@ public class AutorService {
         return AutorResponse.fromEntity(autor);
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!autorRepository.existsById(id)) {
             throw new AutorNotFoundException("Autor não encontrado");

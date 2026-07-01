@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface AutorRepository extends JpaRepository<Autor, Long> {
 
-    Optional<Autor> findByNome(String nome);
+    Optional<Autor> findByNomeIgnoreCase(String nome);
 
     boolean existsByNome(String nome);
 }
