@@ -45,7 +45,7 @@ public class Reserva {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private StatusReserva statusReserva;
+    private StatusReserva status;
 
 
 }

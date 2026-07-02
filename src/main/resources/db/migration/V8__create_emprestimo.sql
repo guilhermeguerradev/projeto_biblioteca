@@ -1,13 +1,13 @@
 create table emprestimo(
-    id serial primary key,
-    id_usuario int not null,
-    id_colaborador int not null,
-    id_exemplar int not null,
+    id bigserial primary key,
+    id_usuario bigint not null,
+    id_colaborador bigint not null,
+    id_exemplar bigint not null,
 
     data_emprestimo timestamp not null default current_timestamp,
 
     data_prevista timestamp not null default (
-            current_timestamp + interval '7 days'
+            current_timestamp + interval '7' DAY
         ),
 
     data_devolucao timestamp,

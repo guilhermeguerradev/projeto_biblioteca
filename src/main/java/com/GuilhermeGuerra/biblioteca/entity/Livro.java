@@ -57,13 +57,13 @@ public class Livro {
             joinColumns = @JoinColumn(name = "id_livro"),
             inverseJoinColumns = @JoinColumn(name = "id_autor")
     )
-    private List<Categoria> categorias = new ArrayList<>();
+    private List<Autor> autores = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
             name = "livro_categoria",
             joinColumns = @JoinColumn(name = "id_livro"),
-            inverseJoinColumns = @JoinColumn(name = "id_autor")
+            inverseJoinColumns = @JoinColumn(name = "id_categoria")
     )
-    private List<Autor> autores = new ArrayList<>();
+    private List<Categoria> categorias = new ArrayList<>();
 }

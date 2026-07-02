@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
-
 public record CreateUsuarioRequest(
         @NotBlank(message = "O nome é obrigatório")
         String nome,

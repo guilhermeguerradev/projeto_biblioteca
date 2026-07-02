@@ -1,6 +1,6 @@
 create table multa(
-    id serial primary key,
-    id_emprestimo int not null unique
+    id bigserial primary key,
+    id_emprestimo bigint not null unique
         references emprestimo(id)
                   on delete cascade,
 

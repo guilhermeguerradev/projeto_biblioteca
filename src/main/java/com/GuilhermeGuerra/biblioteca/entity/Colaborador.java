@@ -1,5 +1,7 @@
 package com.GuilhermeGuerra.biblioteca.entity;
 
+import com.GuilhermeGuerra.biblioteca.entity.enums.Cargo;
+import com.GuilhermeGuerra.biblioteca.entity.enums.Setor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,11 +30,11 @@ public class Colaborador {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String cargo;
+    private Cargo cargo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String setor;
+    private Setor setor;
 
     @Column(name = "data_admissao", nullable = false)
     private LocalDate dataAdmissao;

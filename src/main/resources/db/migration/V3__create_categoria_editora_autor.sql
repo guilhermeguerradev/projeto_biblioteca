@@ -1,11 +1,11 @@
 create table categoria(
-    id serial primary key,
+    id bigserial primary key,
     nome varchar(255) not null,
     descricao varchar(255) not null
 );
 
 create table editora(
-    id serial primary key,
+    id bigserial primary key,
     nome varchar(255) not null,
     cidade varchar(255) not null,
     estado varchar(255) not null,
@@ -13,7 +13,7 @@ create table editora(
 );
 
 create table autor(
-    id serial primary key,
+    id bigserial primary key,
     nome varchar(255) not null,
     nacionalidade varchar(255) not null
 );

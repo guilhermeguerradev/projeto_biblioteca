@@ -25,6 +25,6 @@ public class Categoria {
     @Column(nullable = false)
     private String descricao;
 
-    @ManyToMany(mappedBy = "livros", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
     private List<Livro> livros = new ArrayList<>();
 }

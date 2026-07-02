@@ -1,6 +1,6 @@
 create table exemplar(
-    id serial primary key,
-    livro_id int not null,
+    id bigserial primary key,
+    livro_id bigint not null,
     codigo_patrimonio varchar(255) unique not null,
     status varchar(15) not null check (
         status IN (

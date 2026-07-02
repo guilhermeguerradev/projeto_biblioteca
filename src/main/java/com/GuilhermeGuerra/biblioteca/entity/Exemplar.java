@@ -34,8 +34,8 @@ public class Exemplar {
     private String codigoPatrimonio;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false , length = 15)
-    private StatusExemplar statusExemplar;
+    @Column(name = "status", nullable = false , length = 15)
+    private StatusExemplar status;
 
 
     private String localizacao;
@@ -44,7 +44,7 @@ public class Exemplar {
     private LocalDate dataAquisicao;
 
     @Column(columnDefinition = "TEXT")
-    private String obersevacao;
+    private String observacao;
 
     @OneToMany(mappedBy = "exemplar" , fetch = FetchType.LAZY)
     private List<Emprestimo> emprestimos = new ArrayList<>();

@@ -10,7 +10,6 @@ import com.GuilhermeGuerra.biblioteca.exceptions.UsuarioJaCadastradoException;
 import com.GuilhermeGuerra.biblioteca.exceptions.UsuarioNotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<UsuarioResponse> findAll() {
@@ -78,7 +76,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(()-> new UsuarioNotFoundException("Usuário não encontrado."));
 
-        if(request.email() != null && !request.email().isBlank() && !request.email().equalsIgnoreCase(usuario.getEmail()) {
+        if(request.email() != null && !request.email().isBlank() && !request.email().equalsIgnoreCase(usuario.getEmail())) {
             if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
                 throw new EmailJaCadastradoException("O e-mail informado já está cadastrado.");
             }
@@ -93,7 +91,7 @@ public class UsuarioService {
         }
 
         if (request.senha() != null && !request.senha().isBlank()) {
-            usuario.setSenha(passwordEncoder.encode(request.senha()));
+            usuario.setSenha(request.senha());
         }
 
         usuarioRepository.save(usuario);

@@ -1,9 +1,9 @@
 create table reserva(
-    id serial primary key ,
+    id bigserial primary key ,
 
-    id_usuario int not null,
+    id_usuario bigint not null,
 
-    id_livro int not null,
+    id_livro bigint not null,
 
     data_reserva timestamp not null default current_timestamp,
 

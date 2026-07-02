@@ -37,7 +37,7 @@ public class Multa {
     private String motivo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private StatusMulta status;
 
     @Column(name = "data_pagamento")

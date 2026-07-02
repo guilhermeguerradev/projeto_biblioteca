@@ -35,8 +35,7 @@ public class ProfessorService {
                 request.nome(),
                 request.email(),
                 request.senha(),
-                request.telefone(),
-                Set.of(TipoRole.ROLE_PROFESSOR)
+                request.telefone()
         );
 
         Usuario usuario = usuarioService.criarUsuarioBase(usuarioDto);
@@ -70,8 +69,7 @@ public class ProfessorService {
                 request.nome(),
                 request.email(),
                 request.senha(),
-                request.telefone(),
-                null
+                request.telefone()
         );
 
         usuarioService.update(id, usuarioDto);

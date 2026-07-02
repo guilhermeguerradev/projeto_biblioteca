@@ -1,6 +1,6 @@
 create table livro(
-    id serial primary key,
-    id_editora int not null,
+    id bigserial primary key,
+    id_editora bigint not null,
     titulo varchar(255) not null,
     isbn varchar(255) not null unique,
     ano_publicacao int not null,

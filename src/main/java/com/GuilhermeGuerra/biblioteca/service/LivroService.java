@@ -94,9 +94,9 @@ public class LivroService {
        if(request.anoPublicacao() > 0) {
             livro.setAnoPublicacao(request.anoPublicacao());
        }
-        if(request.numeroPaginas() > 0) {
-            livro.setAnoPublicacao(request.anoPublicacao());
-        }
+       if(request.numeroPaginas() > 0) {
+           livro.setNumeroPaginas(request.numeroPaginas());
+       }
 
         if(request.editoraId() != null) {
             Editora editora = editoraService.buscarReferenciaPorId(request.editoraId());
@@ -105,7 +105,7 @@ public class LivroService {
 
         if(request.categoriasIds() != null && !request.categoriasIds().isEmpty()) {
             List<Categoria> novasCategorias = categoriaService.findAllById(request.categoriasIds());
-            validarExistenciaDeCategorias(novasCategorias,request.autoresIds());
+            validarExistenciaDeCategorias(novasCategorias,request.categoriasIds());
             livro.getCategorias().clear();
             livro.getCategorias().addAll(novasCategorias);
         }
@@ -124,7 +124,7 @@ public class LivroService {
     }
 
     @Transactional
-    private void delete(Long id) {
+    public void delete(Long id) {
         Livro livro = livroRepository.findById(id).orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
 
         if(!livro.getExemplares().isEmpty()) {
