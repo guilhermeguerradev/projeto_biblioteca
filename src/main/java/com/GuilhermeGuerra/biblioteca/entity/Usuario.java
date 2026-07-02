@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Usuario implements UserDetails {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +42,8 @@ public class Usuario implements UserDetails {
     @Column(name = "data_cadastro", nullable = false, insertable = false)
     private LocalDateTime dataCadastro;
 
+
+
     @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY)
     private Professor professor;
 
@@ -57,28 +59,4 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", fetch =  FetchType.LAZY)
     private List<Emprestimo> emprestimos = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "usuario_roles",
-            joinColumns = @JoinColumn(name = "usuario_id")
-    )
-    @Column(name = "role", length = 30)
-    private Set<String> roles = new HashSet<>();
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public @Nullable String getPassword() {
-        return senha;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
 }

@@ -12,33 +12,19 @@ public record UsuarioResponse(
         String senha,
         boolean ativo,
         String telefone,
-        LocalDateTime dataCadastro,
-        Set<String> roles,
-        String tipoPerfil
+        LocalDateTime dataCadastro
 ) {
     public static UsuarioResponse fromEntity(Usuario usuario) {
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
+                usuario.getSenha(),
                 usuario.getEmail(),
-                usuario.getTelefone(),
                 usuario.isAtivo(),
-                usuario.getDataCadastro(),
-                usuario.getRoles(),
-                descobrirTipoPerfil(usuario)
+                usuario.getTelefone(),
+                usuario.getDataCadastro()
         );
     }
 
-    private descobrirTipoPerfil(Usuario usuario) {
-        if(usuario.getAluno() != null) {
-            return "ALUNO";
-        }
-        if (usuario.getProfessor() != null) {
-            return "PROFESSOR";
-        }
-        if (usuario.getColaborador() != null) {
-        return "COLABORADOR";
-        }
-        return "NENHUM";
-        }
+
 }

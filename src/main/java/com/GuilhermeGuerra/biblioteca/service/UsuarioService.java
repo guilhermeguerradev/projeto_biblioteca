@@ -4,7 +4,6 @@ import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.request.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.response.UsuarioResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
-import com.GuilhermeGuerra.biblioteca.entity.enums.TipoRole;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.exceptions.EmailJaCadastradoException;
 import com.GuilhermeGuerra.biblioteca.exceptions.UsuarioJaCadastradoException;
@@ -26,28 +25,47 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public List<UsuarioResponse> findAll() {
         return usuarioRepository.findAll().stream().map(UsuarioResponse::fromEntity).toList();
     }
+
+    @Transactional(readOnly = true)
     public UsuarioResponse findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado."));
         return UsuarioResponse.fromEntity(usuario);
     }
 
-    public UsuarioResponse create(CreateUsuarioRequest request) {
+    @Transactional
+    public Usuario criarUsuarioBase(CreateUsuarioRequest request) {
 
         if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
             throw new UsuarioJaCadastradoException("Usuário já cadastrado.");
         }
-
-        Set<String> roles = request.roles().stream().map(TipoRole::name).collect(Collectors.toSet());
 
         Usuario usuario = Usuario.builder()
                 .nome(request.nome())
                 .email(request.email())
                 .senha(request.senha())
                 .telefone(request.telefone())
-                .roles(roles)
+                .build();
+
+        usuarioRepository.save(usuario);
+        return usuario;
+    }
+
+    @Transactional
+    public UsuarioResponse create(CreateUsuarioRequest request) {
+
+        if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
+            throw new UsuarioJaCadastradoException("Usuário já cadastrado.");
+        }
+
+        Usuario usuario = Usuario.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
                 .build();
 
         usuarioRepository.save(usuario);
@@ -55,8 +73,10 @@ public class UsuarioService {
         return UsuarioResponse.fromEntity(usuario);
     }
 
+    @Transactional
     public UsuarioResponse update(Long id, UpdateUsuarioRequest request) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new UsuarioNotFoundException("Usuário não encontrado."));
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(()-> new UsuarioNotFoundException("Usuário não encontrado."));
 
         if(request.email() != null && !request.email().isBlank() && !request.email().equalsIgnoreCase(usuario.getEmail()) {
             if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
@@ -76,14 +96,6 @@ public class UsuarioService {
             usuario.setSenha(passwordEncoder.encode(request.senha()));
         }
 
-        if (request.roles() != null && !request.roles().isEmpty()) {
-            Set<String> novasRoles = request.roles().stream()
-                    .map(TipoRole::name)
-                    .collect(Collectors.toSet());
-
-            usuario.getRoles().clear();
-            usuario.getRoles().addAll(novasRoles);
-        }
         usuarioRepository.save(usuario);
         return UsuarioResponse.fromEntity(usuario);
     }
