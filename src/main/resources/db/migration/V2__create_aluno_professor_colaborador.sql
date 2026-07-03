@@ -1,5 +1,7 @@
+CREATE SEQUENCE seq_matricula_aluno START WITH 1 INCREMENT BY 1;
+
 create table aluno (
-    id bigserial primary key,
+    id bigint primary key,
     matricula varchar(255) not null unique,
     curso varchar(255),
     periodo smallint not null,
@@ -10,7 +12,7 @@ create table aluno (
 );
 
 create table professor(
-    id bigserial primary key,
+    id bigint primary key,
     siape varchar(255) not null unique,
     departamento varchar(255),
     titulacao varchar(255),
@@ -21,7 +23,7 @@ create table professor(
 );
 
 create table colaborador(
-    id bigserial primary key,
+    id bigint primary key,
 
     cargo varchar(30) not null check (
         cargo in ( 'BIBLIOTECARIO', 'AUXILIAR', 'ADMINISTRADOR')),
