@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.aluno;
+package com.GuilhermeGuerra.biblioteca.dto.aluno;
 
 import jakarta.validation.constraints.*;
 

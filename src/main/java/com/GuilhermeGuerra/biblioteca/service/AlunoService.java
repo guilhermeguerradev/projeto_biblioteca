@@ -1,16 +1,20 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.aluno.CreateAlunoRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.aluno.UpdateAlunoRequest;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoFilterRequest;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.CreateAlunoRequest;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.UpdateAlunoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.request.usuario.UpdateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.AlunoResponse;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Aluno;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.AlunoNotFoundException;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.repository.AlunoRepository;
+import com.GuilhermeGuerra.biblioteca.specification.AlunoSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +30,15 @@ public class AlunoService {
     private final UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
+    public Page<AlunoResponse> listarComFiltros(AlunoFilterRequest filter) {
+        Specification<Aluno> aluno = AlunoSpecification.comFiltros(filter);
+
+        Page<Aluno> paginaAlunos = alunoRepository.findAll(aluno, filter.toPageable());
+
+        return paginaAlunos.map(AlunoResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
     public List<AlunoResponse> findAll() {
         return alunoRepository.findAll().stream().map(AlunoResponse::fromEntity).toList();
     }
@@ -39,9 +52,6 @@ public class AlunoService {
 
     @Transactional
     public AlunoResponse create(CreateAlunoRequest request) {
-        if(alunoRepository.existsByMatriculaIgnoreCase(request.matricula())) {
-            throw new BusinessException("Matrícula já cadastrada");
-        }
 
         CreateUsuarioRequest usuarioDto = new CreateUsuarioRequest(
                 request.nome(),
@@ -57,7 +67,6 @@ public class AlunoService {
                 .matricula(gerarMatricula())
                 .curso(request.curso())
                 .periodo(request.periodo())
-                .periodo(request.periodo())
                 .build();
 
         alunoRepository.save(aluno);
@@ -71,10 +80,6 @@ public class AlunoService {
 
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(()-> new AlunoNotFoundException("Aluno não encontrado"));
-
-        if(request.matricula() != null && !request.matricula().isBlank() && !request.matricula().equalsIgnoreCase(aluno.getMatricula())) {
-            aluno.setMatricula(request.matricula());
-        }
 
         if(request.periodo() != null && request.periodo() > 0) {
             aluno.setPeriodo(request.periodo());

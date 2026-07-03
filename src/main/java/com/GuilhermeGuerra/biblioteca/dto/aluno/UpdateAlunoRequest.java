@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.aluno;
+package com.GuilhermeGuerra.biblioteca.dto.aluno;
 
 import jakarta.validation.constraints.*;
 
@@ -12,8 +12,6 @@ public record UpdateAlunoRequest(
         String senha,
 
         String telefone,
-
-        String matricula,
 
         String curso,
 
