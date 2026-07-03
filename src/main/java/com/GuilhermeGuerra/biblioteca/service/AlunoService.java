@@ -1,6 +1,6 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoFilterRequest;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.FilterAlunoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.aluno.CreateAlunoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.aluno.UpdateAlunoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
@@ -9,7 +9,6 @@ import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Aluno;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.AlunoNotFoundException;
-import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.repository.AlunoRepository;
 import com.GuilhermeGuerra.biblioteca.specification.AlunoSpecification;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +29,10 @@ public class AlunoService {
     private final UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
-    public Page<AlunoResponse> listarComFiltros(AlunoFilterRequest filter) {
+    public Page<AlunoResponse> listarComFiltros(FilterAlunoRequest filter) {
         Specification<Aluno> aluno = AlunoSpecification.comFiltros(filter);
 
-        Page<Aluno> paginaAlunos = alunoRepository.findAll(aluno, filter.toPageable());
+        Page<Aluno> paginaAlunos = alunoRepository.findAll(aluno, filter.toPageable("usuario.nome"));
 
         return paginaAlunos.map(AlunoResponse::fromEntity);
     }

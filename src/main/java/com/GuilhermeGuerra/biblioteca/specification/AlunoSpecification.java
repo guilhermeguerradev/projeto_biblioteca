@@ -1,7 +1,7 @@
 package com.GuilhermeGuerra.biblioteca.specification;
 
 
-import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoFilterRequest;
+import com.GuilhermeGuerra.biblioteca.dto.aluno.FilterAlunoRequest;
 import com.GuilhermeGuerra.biblioteca.entity.Aluno;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import jakarta.persistence.criteria.*;
@@ -17,7 +17,7 @@ public final class AlunoSpecification {
 
     private AlunoSpecification() {}
 
-    public static Specification<Aluno> comFiltros(AlunoFilterRequest filter) {
+    public static Specification<Aluno> comFiltros(FilterAlunoRequest filter) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
