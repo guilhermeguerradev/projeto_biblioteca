@@ -2,10 +2,7 @@ package com.GuilhermeGuerra.biblioteca.entity;
 
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusExemplar;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Exemplar {
 
     @Id

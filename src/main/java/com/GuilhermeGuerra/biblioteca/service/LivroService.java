@@ -32,10 +32,14 @@ public class LivroService {
 
     @Transactional(readOnly = true)
     public LivroResponse findById(Long id) {
-        Livro livro = livroRepository.findById(id).orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
+        Livro livro = findByIdOrElseThrow(id);
         return LivroResponse.fromEntity(livro);
     }
 
+    @Transactional(readOnly = true)
+    public Livro findByIdOrElseThrow(Long id) {
+        return livroRepository.findById(id).orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
+    }
 
     @Transactional
     public LivroResponse create(CreateLivroRequest request) {
