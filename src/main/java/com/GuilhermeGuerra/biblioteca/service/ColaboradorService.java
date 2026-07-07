@@ -1,12 +1,11 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoResponse;
 import com.GuilhermeGuerra.biblioteca.dto.colaborador.ColaboradorResponse;
 import com.GuilhermeGuerra.biblioteca.dto.colaborador.CreateColaboradorRequest;
 import com.GuilhermeGuerra.biblioteca.dto.colaborador.FilterColaboradorRequest;
 import com.GuilhermeGuerra.biblioteca.dto.colaborador.UpdateColaboradorRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.UpdateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.CreateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.entity.Colaborador;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.ColaboradorNotFoundException;

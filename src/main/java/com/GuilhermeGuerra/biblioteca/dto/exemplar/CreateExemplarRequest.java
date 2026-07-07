@@ -2,11 +2,12 @@ package com.GuilhermeGuerra.biblioteca.dto.exemplar;
 
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusExemplar;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public record CreateExemplarRequest(
-        @NotBlank(message = "Exemplar deve estar vinculado a algum livro.")
+        @NotNull(message = "Exemplar deve estar vinculado a algum livro.")
         Long livroId,
 
         String codigoPatrimonio,

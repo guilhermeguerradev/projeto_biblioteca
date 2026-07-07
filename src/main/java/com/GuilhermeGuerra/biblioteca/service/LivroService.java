@@ -1,8 +1,8 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.livro.CreateLivroRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.livro.UpdateLivroRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.LivroResponse;
+import com.GuilhermeGuerra.biblioteca.dto.livro.CreateLivroRequest;
+import com.GuilhermeGuerra.biblioteca.dto.livro.UpdateLivroRequest;
+import com.GuilhermeGuerra.biblioteca.dto.livro.LivroResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Autor;
 import com.GuilhermeGuerra.biblioteca.entity.Categoria;
 import com.GuilhermeGuerra.biblioteca.entity.Editora;

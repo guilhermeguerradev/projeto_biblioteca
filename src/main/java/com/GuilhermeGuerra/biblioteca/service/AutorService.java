@@ -1,8 +1,8 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.autor.CreateAutorRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.autor.UpdateAutorRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.AutorResponse;
+import com.GuilhermeGuerra.biblioteca.dto.autor.CreateAutorRequest;
+import com.GuilhermeGuerra.biblioteca.dto.autor.UpdateAutorRequest;
+import com.GuilhermeGuerra.biblioteca.dto.autor.AutorResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Autor;
 import com.GuilhermeGuerra.biblioteca.exceptions.AutorJaCadastradoException;
 import com.GuilhermeGuerra.biblioteca.exceptions.AutorNotFoundException;

@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.usuario;
+package com.GuilhermeGuerra.biblioteca.dto.usuario;
 
 
 

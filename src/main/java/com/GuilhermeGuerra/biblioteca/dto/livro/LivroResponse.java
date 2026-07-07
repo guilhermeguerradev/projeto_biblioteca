@@ -1,6 +1,8 @@
-package com.GuilhermeGuerra.biblioteca.dto.response;
+package com.GuilhermeGuerra.biblioteca.dto.livro;
 
-import com.GuilhermeGuerra.biblioteca.entity.Categoria;
+import com.GuilhermeGuerra.biblioteca.dto.autor.AutorResumidoResponse;
+import com.GuilhermeGuerra.biblioteca.dto.categoria.CategoriaResumidaResponse;
+import com.GuilhermeGuerra.biblioteca.dto.editora.EditoraResumidaResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Livro;
 
 import java.util.List;

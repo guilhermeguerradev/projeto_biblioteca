@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.autor;
+package com.GuilhermeGuerra.biblioteca.dto.autor;
 
 
 public record UpdateAutorRequest(

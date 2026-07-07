@@ -1,9 +1,8 @@
-package com.GuilhermeGuerra.biblioteca.dto.response;
+package com.GuilhermeGuerra.biblioteca.dto.usuario;
 
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 public record UsuarioResponse(
         Long id,

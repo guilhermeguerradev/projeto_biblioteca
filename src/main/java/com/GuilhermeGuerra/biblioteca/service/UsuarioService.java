@@ -1,8 +1,8 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.UpdateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.UsuarioResponse;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.CreateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.UsuarioResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.exceptions.EmailJaCadastradoException;
@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +28,13 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public UsuarioResponse findById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado."));
+        Usuario usuario = findByIdOrElseThrow(id);
         return UsuarioResponse.fromEntity(usuario);
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario findByIdOrElseThrow(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado."));
     }
 
     @Transactional
@@ -73,8 +76,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse update(Long id, UpdateUsuarioRequest request) {
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(()-> new UsuarioNotFoundException("Usuário não encontrado."));
+        Usuario usuario = findByIdOrElseThrow(id);
 
         if(request.email() != null && !request.email().isBlank() && !request.email().equalsIgnoreCase(usuario.getEmail())) {
             if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {

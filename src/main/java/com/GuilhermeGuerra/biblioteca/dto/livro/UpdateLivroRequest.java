@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.livro;
+package com.GuilhermeGuerra.biblioteca.dto.livro;
 
 
 import java.util.List;

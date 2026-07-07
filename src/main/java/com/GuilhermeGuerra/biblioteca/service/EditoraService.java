@@ -1,8 +1,8 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.editora.CreateEditoraRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.editora.UpdateEditoraRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.EditoraResponse;
+import com.GuilhermeGuerra.biblioteca.dto.editora.CreateEditoraRequest;
+import com.GuilhermeGuerra.biblioteca.dto.editora.UpdateEditoraRequest;
+import com.GuilhermeGuerra.biblioteca.dto.editora.EditoraResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Editora;
 import com.GuilhermeGuerra.biblioteca.exceptions.CategoriaNotFoundException;
 import com.GuilhermeGuerra.biblioteca.exceptions.EditoraJaCadastradaException;

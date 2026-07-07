@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.response;
+package com.GuilhermeGuerra.biblioteca.dto.autor;
 
 public record AutorResumidoResponse(
         Long id,

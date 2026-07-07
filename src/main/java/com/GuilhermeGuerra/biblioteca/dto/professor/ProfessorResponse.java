@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.response;
+package com.GuilhermeGuerra.biblioteca.dto.professor;
 
 import com.GuilhermeGuerra.biblioteca.entity.Professor;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;

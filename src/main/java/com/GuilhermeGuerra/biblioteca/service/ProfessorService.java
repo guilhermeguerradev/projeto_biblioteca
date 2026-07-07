@@ -1,10 +1,10 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.professor.CreateProfessorRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.professor.UpdateProfessorRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.CreateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.usuario.UpdateUsuarioRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.ProfessorResponse;
+import com.GuilhermeGuerra.biblioteca.dto.professor.CreateProfessorRequest;
+import com.GuilhermeGuerra.biblioteca.dto.professor.UpdateProfessorRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.CreateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
+import com.GuilhermeGuerra.biblioteca.dto.professor.ProfessorResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Professor;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
@@ -13,8 +13,6 @@ import com.GuilhermeGuerra.biblioteca.repository.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

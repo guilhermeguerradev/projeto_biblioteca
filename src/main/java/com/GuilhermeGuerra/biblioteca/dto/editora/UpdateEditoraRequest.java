@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.editora;
+package com.GuilhermeGuerra.biblioteca.dto.editora;
 
 
 public record UpdateEditoraRequest(

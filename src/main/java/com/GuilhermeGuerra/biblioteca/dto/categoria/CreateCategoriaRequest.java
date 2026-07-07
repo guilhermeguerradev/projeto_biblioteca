@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.categoria;
+package com.GuilhermeGuerra.biblioteca.dto.categoria;
 
 import jakarta.validation.constraints.NotBlank;
 

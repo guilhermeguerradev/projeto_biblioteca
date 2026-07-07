@@ -1,4 +1,4 @@
-package com.GuilhermeGuerra.biblioteca.dto.request.categoria;
+package com.GuilhermeGuerra.biblioteca.dto.categoria;
 
 public record UpdateCategoriaRequest(
         String nome,

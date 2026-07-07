@@ -1,8 +1,8 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.request.categoria.CreateCategoriaRequest;
-import com.GuilhermeGuerra.biblioteca.dto.request.categoria.UpdateCategoriaRequest;
-import com.GuilhermeGuerra.biblioteca.dto.response.CategoriaResponse;
+import com.GuilhermeGuerra.biblioteca.dto.categoria.CreateCategoriaRequest;
+import com.GuilhermeGuerra.biblioteca.dto.categoria.UpdateCategoriaRequest;
+import com.GuilhermeGuerra.biblioteca.dto.categoria.CategoriaResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Categoria;
 import com.GuilhermeGuerra.biblioteca.exceptions.CategoriaJaCadastradaException;
 import com.GuilhermeGuerra.biblioteca.exceptions.CategoriaNotFoundException;
