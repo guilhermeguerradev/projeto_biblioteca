@@ -11,4 +11,7 @@ public record UpdateExemplarRequest(
         LocalDate dataAquisicao,
         String observacao
 ) {
+    public UpdateExemplarRequest(StatusExemplar status) {
+        this(null, status, null, null, null);
+    }
 }

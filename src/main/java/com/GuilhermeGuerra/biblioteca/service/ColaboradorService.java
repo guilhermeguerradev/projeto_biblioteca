@@ -9,6 +9,7 @@ import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.entity.Colaborador;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 import com.GuilhermeGuerra.biblioteca.exceptions.ColaboradorNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.ColaboradorRepository;
 import com.GuilhermeGuerra.biblioteca.specification.ColaboradorSpecification;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +40,17 @@ public class ColaboradorService {
     }
 
     @Transactional(readOnly = true)
+    public Colaborador findByIdOrElseThrow(Long id) {
+        return this.colaboradorRepository.findById(id).orElseThrow(() -> new NotFoundException("Colaborador não encontrado"));
+    }
+
+    @Transactional(readOnly = true)
     public List<ColaboradorResponse> findAll() {
         return colaboradorRepository.findAll().stream().map(ColaboradorResponse::fromEntity).toList();
     }
 
     public ColaboradorResponse findById(Long id) {
-        Colaborador colaborador = colaboradorRepository.findById(id)
-                .orElseThrow(() -> new ColaboradorNotFoundException("Colaborador não encontrado"));
+        Colaborador colaborador = findByIdOrElseThrow(id);
         return ColaboradorResponse.fromEntity(colaborador);
     }
 
@@ -76,8 +81,7 @@ public class ColaboradorService {
 
     @Transactional
     public ColaboradorResponse update(Long id,UpdateColaboradorRequest request) {
-
-        Colaborador colaborador = colaboradorRepository.findById(id).orElseThrow(() -> new ColaboradorNotFoundException("Colaborador não encontrado"));
+        Colaborador colaborador = findByIdOrElseThrow(id);
 
         if(request.cargo() != null) {
             colaborador.setCargo(request.cargo());

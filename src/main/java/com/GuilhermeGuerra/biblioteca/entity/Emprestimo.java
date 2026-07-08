@@ -2,10 +2,7 @@ package com.GuilhermeGuerra.biblioteca.entity;
 
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusEmprestimo;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Emprestimo {
 
     @Id
@@ -42,23 +40,23 @@ public class Emprestimo {
     )
     private Exemplar exemplar;
 
-    @Column(name = "data_emprestimo", nullable = false,insertable = false)
+    @Column(name = "data_emprestimo", nullable = false)
     private LocalDateTime dataEmprestimo;
 
-    @Column(name = "data_prevista", nullable = false, insertable = false)
+    @Column(name = "data_prevista", nullable = false)
     private LocalDateTime dataPrevista;
 
     @Column(name = "data_devolucao")
     private LocalDateTime dataDevolucao;
 
-    @Column(name = "quantidade_renovacoes", nullable = false, insertable = false)
+    @Column(name = "quantidade_renovacoes", nullable = false)
     private int quantidadeRenovacoes;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusEmprestimo status;
 
-    @OneToOne(mappedBy = "emprestimo", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "emprestimo", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Multa multa;
 
 

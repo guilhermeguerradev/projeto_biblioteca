@@ -4,5 +4,6 @@ public enum StatusEmprestimo {
     ATIVO,
     DEVOLVIDO,
     ATRASADO,
-    CANCELADO
+    CANCELADO,
+    FINALIZADO
 }

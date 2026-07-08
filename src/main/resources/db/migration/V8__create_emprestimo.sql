@@ -4,12 +4,8 @@ create table emprestimo(
     id_colaborador bigint not null,
     id_exemplar bigint not null,
 
-    data_emprestimo timestamp not null default current_timestamp,
-
-    data_prevista timestamp not null default (
-            current_timestamp + interval '7' DAY
-        ),
-
+    data_emprestimo timestamp not null ,
+    data_prevista timestamp not null ,
     data_devolucao timestamp,
 
     quantidade_renovacoes int not null default 0,
