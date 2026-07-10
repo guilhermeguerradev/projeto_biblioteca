@@ -2,7 +2,7 @@ package com.GuilhermeGuerra.biblioteca.entity.enums;
 
 public enum StatusReserva {
     ATIVA,
-    DISPONIVEL,
+    AGUARDANDO_RETIRADA,
     FINALIZADA,
     CANCELADA,
     EXPIRADA

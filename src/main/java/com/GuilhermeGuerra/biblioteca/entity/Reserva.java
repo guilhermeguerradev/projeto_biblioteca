@@ -38,12 +38,17 @@ public class Reserva {
     )
     private Livro livro;
 
-    @Column(name = "data_reserva", nullable = false, insertable = false)
+    @Column(name = "data_reserva", nullable = false)
     private LocalDateTime dataReserva;
+
+    @Column(name = "data_liberacao")
+    private LocalDateTime dataLiberacao;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusReserva status;
+
+
 
 
 }
