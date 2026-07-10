@@ -4,15 +4,15 @@ import com.GuilhermeGuerra.biblioteca.dto.usuario.CreateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.usuario.UsuarioResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
+import com.GuilhermeGuerra.biblioteca.exceptions.AlreadyRegisteredException;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
-import com.GuilhermeGuerra.biblioteca.exceptions.EmailJaCadastradoException;
-import com.GuilhermeGuerra.biblioteca.exceptions.UsuarioJaCadastradoException;
-import com.GuilhermeGuerra.biblioteca.exceptions.UsuarioNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -34,21 +34,25 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public Usuario findByIdOrElseThrow(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado."));
+        return usuarioRepository.findById(id).orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
     }
 
     @Transactional
     public Usuario criarUsuarioBase(CreateUsuarioRequest request) {
 
         if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new UsuarioJaCadastradoException("Usuário já cadastrado.");
+            throw new AlreadyRegisteredException("Usuário já cadastrado.");
         }
+
+        LocalDateTime dataCadastro = LocalDateTime.now();
 
         Usuario usuario = Usuario.builder()
                 .nome(request.nome())
                 .email(request.email())
                 .senha(request.senha())
                 .telefone(request.telefone())
+                .dataCadastro(dataCadastro)
+                .ativo(true)
                 .build();
 
         usuarioRepository.save(usuario);
@@ -57,20 +61,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponse create(CreateUsuarioRequest request) {
-
-        if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
-            throw new UsuarioJaCadastradoException("Usuário já cadastrado.");
-        }
-
-        Usuario usuario = Usuario.builder()
-                .nome(request.nome())
-                .email(request.email())
-                .senha(request.senha())
-                .telefone(request.telefone())
-                .build();
-
-        usuarioRepository.save(usuario);
-
+        Usuario usuario = criarUsuarioBase(request);
         return UsuarioResponse.fromEntity(usuario);
     }
 
@@ -80,7 +71,7 @@ public class UsuarioService {
 
         if(request.email() != null && !request.email().isBlank() && !request.email().equalsIgnoreCase(usuario.getEmail())) {
             if(usuarioRepository.existsByEmailIgnoreCase(request.email())) {
-                throw new EmailJaCadastradoException("O e-mail informado já está cadastrado.");
+                throw new AlreadyRegisteredException("O e-mail informado já está cadastrado.");
             }
             usuario.setEmail(request.email());
         }
@@ -103,7 +94,7 @@ public class UsuarioService {
     @Transactional
     public void desativar(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado com o ID: " + id));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado com o ID: " + id));
         if (!usuario.isAtivo()) {
             throw new BusinessException("Este usuário já se encontra desativado no sistema.");
         }

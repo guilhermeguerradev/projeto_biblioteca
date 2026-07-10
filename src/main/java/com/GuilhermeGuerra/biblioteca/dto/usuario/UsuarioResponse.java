@@ -8,7 +8,6 @@ public record UsuarioResponse(
         Long id,
         String nome,
         String email,
-        String senha,
         boolean ativo,
         String telefone,
         LocalDateTime dataCadastro
@@ -17,7 +16,6 @@ public record UsuarioResponse(
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
-                usuario.getSenha(),
                 usuario.getEmail(),
                 usuario.isAtivo(),
                 usuario.getTelefone(),

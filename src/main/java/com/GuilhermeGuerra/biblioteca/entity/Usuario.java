@@ -32,10 +32,10 @@ public class Usuario {
 
     private String telefone;
 
-    @Column(nullable = false, insertable = false)
+    @Column(nullable = false)
     private boolean ativo;
 
-    @Column(name = "data_cadastro", nullable = false, insertable = false)
+    @Column(name = "data_cadastro", nullable = false)
     private LocalDateTime dataCadastro;
 
 

@@ -3,7 +3,9 @@ package com.GuilhermeGuerra.biblioteca.dto.usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record CreateUsuarioRequest(
         @NotBlank(message = "O nome é obrigatório")
         String nome,
