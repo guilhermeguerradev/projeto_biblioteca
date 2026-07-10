@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -31,6 +32,17 @@ public class MultaService {
     @Transactional(readOnly = true)
     public Multa findByIdOrElseThrow(Long id) {
         return this.multaRepository.findById(id).orElseThrow(() -> new NotFoundException("Multa não encontrada"));
+    }
+
+    @Transactional(readOnly = true)
+    public MultaResponse findById(Long id) {
+        Multa multa = findByIdOrElseThrow(id);
+        return MultaResponse.fromEntity(multa);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MultaResponse> findAll() {
+        return multaRepository.findAll().stream().map(MultaResponse::fromEntity).toList();
     }
 
     @Transactional
