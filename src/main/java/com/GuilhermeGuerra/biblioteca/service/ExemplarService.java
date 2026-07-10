@@ -7,7 +7,7 @@ import com.GuilhermeGuerra.biblioteca.entity.Exemplar;
 import com.GuilhermeGuerra.biblioteca.entity.Livro;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusExemplar;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
-import com.GuilhermeGuerra.biblioteca.exceptions.ExemplarNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.ExemplarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class ExemplarService {
 
     @Transactional(readOnly = true)
     public Exemplar findByIdOrElseThrow(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ExemplarNotFoundException("Exemplar não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Exemplar não encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -46,15 +46,9 @@ public class ExemplarService {
     public ExemplarResponse create(CreateExemplarRequest request) {
         Livro livro = livroService.findByIdOrElseThrow(request.livroId());
 
-        String codigoPatrimonio = UUID.randomUUID().toString();
+        String codigoPatrimonio = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        LocalDate dataAquisicao;
-
-        if(request.dataAquisicao() == null) {
-            dataAquisicao = LocalDate.now();
-        } else {
-            dataAquisicao = request.dataAquisicao();
-        }
+        LocalDate dataAquisicao = (request.dataAquisicao() == null) ? LocalDate.now() : request.dataAquisicao();
 
         Exemplar exemplar = Exemplar.builder()
                 .livro(livro)
@@ -75,7 +69,7 @@ public class ExemplarService {
 
         Exemplar exemplar = findByIdOrElseThrow(id);
 
-        if( request.livroId() != null && request.livroId() > 0 && !(request.livroId().equals(exemplar.getLivro().getId())) ) {
+        if( request.livroId() != null && !request.livroId().equals(exemplar.getLivro().getId())) {
             Livro livro = livroService.findByIdOrElseThrow(request.livroId());
             exemplar.setLivro(livro);
         }
@@ -100,14 +94,18 @@ public class ExemplarService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void descartar(Long id) {
         Exemplar exemplar = findByIdOrElseThrow(id);
+
+        if (exemplar.getStatus() == StatusExemplar.DESCARTADO) {
+            throw new BusinessException("Este exemplar já se encontra descartado no sistema.");
+        }
 
         if (exemplar.getStatus() == StatusExemplar.RESERVADO ||
             exemplar.getStatus() == StatusExemplar.EMPRESTADO) {
-            throw new BusinessException("Exemplar não pode ser apagado pois está reservado ou emprestado");
+            throw new BusinessException("Exemplar não pode ser descartado pois está ativamente reservado ou emprestado.");
         }
-        repository.delete(exemplar);
+        exemplar.setStatus(StatusExemplar.DESCARTADO);
     }
 
 

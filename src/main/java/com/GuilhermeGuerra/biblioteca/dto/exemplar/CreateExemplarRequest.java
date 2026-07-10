@@ -10,16 +10,13 @@ public record CreateExemplarRequest(
         @NotNull(message = "Exemplar deve estar vinculado a algum livro.")
         Long livroId,
 
-        String codigoPatrimonio,
-
-        @NotBlank(message = "Status do exemplar deve ser informado.")
+        @NotNull(message = "Status do exemplar deve ser informado.")
         StatusExemplar status,
 
         @NotBlank(message = "Deve ser informado a localização do exemplar")
         String localizacao,
 
         LocalDate dataAquisicao,
-
 
         String observacao
 
