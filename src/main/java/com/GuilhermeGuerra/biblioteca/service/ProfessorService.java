@@ -7,8 +7,9 @@ import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.professor.ProfessorResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Professor;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
+import com.GuilhermeGuerra.biblioteca.exceptions.AlreadyRegisteredException;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
-import com.GuilhermeGuerra.biblioteca.exceptions.ProfessorNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,14 +28,15 @@ public class ProfessorService {
     @Transactional
     public ProfessorResponse create(CreateProfessorRequest request) {
         if(professorRepository.existsBySiapeIgnoreCase(request.siape())){
-            throw new BusinessException("Já existe um professor cadastrado com esse Siape.");
+            throw new AlreadyRegisteredException("Já existe um professor cadastrado com esse Siape.");
         }
-        CreateUsuarioRequest usuarioDto = new CreateUsuarioRequest(
-                request.nome(),
-                request.email(),
-                request.senha(),
-                request.telefone()
-        );
+
+        CreateUsuarioRequest usuarioDto = CreateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         Usuario usuario = usuarioService.criarUsuarioBase(usuarioDto);
 
@@ -51,35 +53,33 @@ public class ProfessorService {
         return ProfessorResponse.fromEntity(professor);
     }
 
-    @Transactional ProfessorResponse update(Long id, UpdateProfessorRequest request) {
+    @Transactional
+    ProfessorResponse update(Long id, UpdateProfessorRequest request) {
         Professor professor = professorRepository.findById(id)
-                .orElseThrow(()-> new ProfessorNotFoundException("Professor não encontrado."));
+                .orElseThrow(()-> new NotFoundException("Professor não encontrado."));
 
         if(request.departamento() != null && !request.departamento().isBlank()) {
             professor.setDepartamento(request.departamento());
         }
 
-        if(request.titulacao() != null && !request.departamento().isBlank()) {
+        if(request.titulacao() != null && !request.titulacao().isBlank()) {
             professor.setTitulacao(request.titulacao());
         }
 
-        UpdateUsuarioRequest usuarioDto = new UpdateUsuarioRequest(
-                request.nome(),
-                request.email(),
-                request.senha(),
-                request.telefone()
-        );
+        UpdateUsuarioRequest usuarioDto = UpdateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         usuarioService.update(id, usuarioDto);
 
-        Professor professorsalvo = professorRepository.save(professor);
-
-
-        return ProfessorResponse.fromEntity(professorsalvo);
+        return ProfessorResponse.fromEntity(professor);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void desativar(Long id) {
         usuarioService.desativar(id);
     }
 }

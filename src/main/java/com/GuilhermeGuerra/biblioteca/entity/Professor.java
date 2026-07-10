@@ -13,7 +13,6 @@ import lombok.*;
 public class Professor {
 
     @Id
-
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -27,6 +26,4 @@ public class Professor {
     private String departamento;
 
     private String titulacao;
-
-
 }

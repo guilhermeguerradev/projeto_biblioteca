@@ -5,7 +5,9 @@ import com.GuilhermeGuerra.biblioteca.entity.Usuario;
 
 public record ProfessorResponse(
         Long id,
-        Usuario usuario,
+        String nome,
+        String email,
+        String telefone,
         String siape,
         String departamento,
         String titulacao
@@ -13,7 +15,9 @@ public record ProfessorResponse(
     public static ProfessorResponse fromEntity(Professor professor) {
         return new ProfessorResponse(
                 professor.getId(),
-                professor.getUsuario(),
+                professor.getUsuario().getNome(),
+                professor.getUsuario().getEmail(),
+                professor.getUsuario().getTelefone(),
                 professor.getSiape(),
                 professor.getDepartamento(),
                 professor.getTitulacao()
