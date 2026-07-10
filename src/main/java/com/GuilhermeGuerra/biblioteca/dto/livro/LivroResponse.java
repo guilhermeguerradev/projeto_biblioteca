@@ -11,23 +11,37 @@ public record LivroResponse(
         Long id,
         String titulo,
         String isbn,
-        int anoPublicacao,
+        Integer anoPublicacao,
         String edicao,
         String idioma,
         String sinopse,
-        int numeroPaginas,
+        Integer numeroPaginas,
         EditoraResumidaResponse editora,
         List<CategoriaResumidaResponse> categorias,
         List<AutorResumidoResponse> autores
 ) {
     public static LivroResponse fromEntity(Livro livro) {
         List<CategoriaResumidaResponse> categorias = livro.getCategorias().stream()
-                .map(c -> new CategoriaResumidaResponse(c.getId(), c.getNome())).toList();
+                .map(
+                        c -> CategoriaResumidaResponse.builder()
+                                .id(c.getId())
+                                .nome(c.getNome())
+                                .build()
+                ).toList();
 
         List<AutorResumidoResponse> autores = livro.getAutores().stream()
-                .map(a -> new AutorResumidoResponse(a.getId(), a.getNome())).toList();
+                .map(
+                        a -> AutorResumidoResponse.builder()
+                                .id(a.getId())
+                                .nome(a.getNome())
+                                .build()
+                ).toList();
 
-        EditoraResumidaResponse editora = new EditoraResumidaResponse(livro.getEditora().getId(),livro.getEditora().getNome());
+        EditoraResumidaResponse editora = EditoraResumidaResponse
+                .builder()
+                .id(livro.getEditora().getId())
+                .nome(livro.getEditora().getNome())
+                .build();
 
         return new LivroResponse(
                 livro.getId(),

@@ -12,7 +12,7 @@ public record CreateLivroRequest(
         String isbn,
 
         @Min(value = 100, message = "O ano publicação inválido")
-        int anoPublicacao,
+        Integer anoPublicacao,
 
         @NotBlank(message = "A edição é obrigatório")
         String edicao,

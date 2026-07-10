@@ -12,6 +12,7 @@ import com.GuilhermeGuerra.biblioteca.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -38,14 +39,14 @@ public class LivroService {
 
     @Transactional(readOnly = true)
     public Livro findByIdOrElseThrow(Long id) {
-        return livroRepository.findById(id).orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
+        return livroRepository.findById(id).orElseThrow(() -> new NotFoundException("Livro não encontrado"));
     }
 
     @Transactional
     public LivroResponse create(CreateLivroRequest request) {
 
-        if(livroRepository.existsByTituloIgnoreCase(request.titulo())) {
-            throw new LivroJaCadastradoException(request.titulo());
+        if (livroRepository.existsByIsbnIgnoreCase(request.isbn())) {
+            throw new AlreadyRegisteredException("Já existe um livro cadastrado com o ISBN " + request.isbn());
         }
 
         Editora editora = editoraService.buscarReferenciaPorId(request.editoraId());
@@ -78,27 +79,30 @@ public class LivroService {
     @Transactional
     public LivroResponse update(Long id,UpdateLivroRequest request) {
         Livro livro = livroRepository.findById(id)
-                .orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Livro não encontrado"));
 
-        if(request.titulo() != null && !request.titulo().isBlank()) {
+        if(StringUtils.hasText(request.titulo())) {
             livro.setTitulo(request.titulo());
         }
-        if(request.isbn() != null && !request.isbn().isBlank()) {
+        if(StringUtils.hasText(request.isbn()) && !request.isbn().equalsIgnoreCase(livro.getIsbn())) {
+            if(livroRepository.existsByIsbnIgnoreCase(request.isbn())) {
+                throw new AlreadyRegisteredException("Já existe um livro cadastrado com o ISBN " + request.isbn());
+            }
             livro.setIsbn(request.isbn());
         }
-        if(request.edicao() != null && !request.edicao().isBlank()) {
+        if(StringUtils.hasText(request.edicao())) {
             livro.setEdicao(request.edicao());
         }
-        if(request.idioma() != null && !request.idioma().isBlank()) {
+        if(StringUtils.hasText(request.idioma())) {
             livro.setIdioma(request.idioma());
         }
-        if(request.sinopse() != null && !request.sinopse().isBlank()) {
+        if(StringUtils.hasText(request.sinopse())) {
             livro.setSinopse(request.sinopse());
         }
-       if(request.anoPublicacao() > 0) {
+       if(request.anoPublicacao() != null) {
             livro.setAnoPublicacao(request.anoPublicacao());
        }
-       if(request.numeroPaginas() > 0) {
+       if(request.numeroPaginas() != null) {
            livro.setNumeroPaginas(request.numeroPaginas());
        }
 
@@ -117,28 +121,28 @@ public class LivroService {
         if(request.autoresIds() != null && !request.autoresIds().isEmpty()) {
             List<Autor> novosAutores = autorService.findAllById(request.autoresIds());
             validarExistenciaDeAutores(novosAutores, request.autoresIds());
-
             livro.getAutores().clear();
             livro.getAutores().addAll(novosAutores);
         }
-
-        livroRepository.save(livro);
 
         return LivroResponse.fromEntity(livro);
     }
 
     @Transactional
     public void delete(Long id) {
-        Livro livro = livroRepository.findById(id).orElseThrow(() -> new LivroNotFoundException("Livro não encontrado"));
+        if (!livroRepository.existsById(id)) {
+            throw new NotFoundException("Livro não encontrado");
+        }
 
-        if(!livro.getExemplares().isEmpty()) {
+        if (livroRepository.possuiExemplaresVinculados(id)) {
             throw new BusinessException("Não é possível excluir o livro porque ele possui exemplares cadastrados.");
         }
-        if(!livro.getReservas().isEmpty()) {
+
+        if (livroRepository.possuiReservasVinculadas(id)) {
             throw new BusinessException("Não é possível excluir o livro porque ele possui reservas cadastradas.");
         }
 
-        livroRepository.delete(livro);
+        livroRepository.deleteById(id);
     }
 
 
@@ -148,15 +152,15 @@ public class LivroService {
         long idsUnicosRequisitados = requisitadas.stream().distinct().count();
 
         if(cadastradas.size() != idsUnicosRequisitados) {
-            throw new CategoriaNotFoundException("Uma ou mais categorias informadas não foram encontradas no sistema");
+            throw new NotFoundException("Uma ou mais categorias informadas não foram encontradas no sistema");
         }
     }
 
-    public void validarExistenciaDeAutores(List<Autor> cadastrados, List<Long> requisitados) {
-        long idsUnicosRequisistados = requisitados.stream().distinct().count();
+    private void validarExistenciaDeAutores(List<Autor> cadastrados, List<Long> requisitados) {
+        long idsUnicosRequisitados = requisitados.stream().distinct().count();
 
-        if(cadastrados.size() != idsUnicosRequisistados) {
-            throw new AutorNotFoundException("Um ou mais Autores informados não foram encontrados no sistema");
+        if(cadastrados.size() != idsUnicosRequisitados) {
+            throw new NotFoundException("Um ou mais Autores informados não foram encontrados no sistema");
         }
     }
 
