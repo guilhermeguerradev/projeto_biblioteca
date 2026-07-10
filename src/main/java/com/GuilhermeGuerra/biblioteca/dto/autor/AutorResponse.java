@@ -13,7 +13,7 @@ public record AutorResponse(
 ) {
     public static AutorResponse fromEntity(Autor autor) {
         List<String> titulos = autor.getLivros().stream()
-                .map(Livro::getTitulo) // ajusta o nome do campo se for diferente
+                .map(Livro::getTitulo)
                 .toList();
 
         return new AutorResponse(

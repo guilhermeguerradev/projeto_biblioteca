@@ -4,12 +4,13 @@ import com.GuilhermeGuerra.biblioteca.dto.autor.CreateAutorRequest;
 import com.GuilhermeGuerra.biblioteca.dto.autor.UpdateAutorRequest;
 import com.GuilhermeGuerra.biblioteca.dto.autor.AutorResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Autor;
-import com.GuilhermeGuerra.biblioteca.exceptions.AutorJaCadastradoException;
-import com.GuilhermeGuerra.biblioteca.exceptions.AutorNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.AutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -21,11 +22,7 @@ public class AutorService {
 
     @Transactional(readOnly = true)
     public List<AutorResponse> findAll() {
-        List<AutorResponse> autores = autorRepository.findAll()
-                .stream()
-                .map(autor -> AutorResponse.fromEntity(autor))
-                .toList();
-        return autores;
+        return autorRepository.findAll().stream().map(AutorResponse::fromEntity).toList();
     }
 
     @Transactional(readOnly = true)
@@ -36,18 +33,12 @@ public class AutorService {
     @Transactional(readOnly = true)
     public AutorResponse findById(Long id) {
         Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new AutorNotFoundException("Autor não encontrado"));
-
+                .orElseThrow(() -> new NotFoundException("Autor não encontrado"));
         return AutorResponse.fromEntity(autor);
     }
 
     @Transactional
     public AutorResponse create(CreateAutorRequest request) {
-
-        if(autorRepository.existsByNome(request.nome())) {
-            new AutorJaCadastradoException("Autor já cadastrado exception");
-        }
-
         Autor autor = Autor.builder()
                 .nome(request.nome())
                 .nacionalidade(request.nacionalidade())
@@ -56,24 +47,21 @@ public class AutorService {
         autorRepository.save(autor);
 
         return AutorResponse.fromEntity(autor);
-
     }
 
     @Transactional
     public AutorResponse update(Long id,UpdateAutorRequest request) {
 
         Autor autor = autorRepository.findById(id)
-                .orElseThrow(() -> new AutorNotFoundException("Autor não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Autor não encontrado"));
 
-        if(!request.nome().isBlank() && request.nome() != null) {
+        if(StringUtils.hasText(request.nome())) {
             autor.setNome(request.nome());
         }
 
-        if(!request.nacionalidade().isBlank() && request.nome() != null) {
+        if(StringUtils.hasText(request.nacionalidade())) {
             autor.setNacionalidade(request.nacionalidade());
         }
-
-        autorRepository.save(autor);
 
         return AutorResponse.fromEntity(autor);
     }
@@ -81,7 +69,10 @@ public class AutorService {
     @Transactional
     public void delete(Long id) {
         if (!autorRepository.existsById(id)) {
-            throw new AutorNotFoundException("Autor não encontrado");
+            throw new NotFoundException("Autor não encontrado");
+        }
+        if(autorRepository.possuiLivrosVinculados(id)) {
+            throw new BusinessException("Não é possível remover este autor pois ela está vinculada a um ou mais livros");
         }
         autorRepository.deleteById(id);
     }
