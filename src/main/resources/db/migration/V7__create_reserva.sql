@@ -6,10 +6,11 @@ create table reserva(
     id_livro bigint not null,
 
     data_reserva timestamp not null default current_timestamp,
+    data_liberacao timestamp,
 
     status varchar(15) not null check (
         status in (
-        'ATIVA','DISPONIVEL','FINALIZADA','CANCELADA','EXPIRADA'
+        'ATIVA','AGUARDANDO_RETIRADA','FINALIZADA','CANCELADA','EXPIRADA'
     )),
 
     constraint fk_usuario_reserva foreign key (id_usuario)
