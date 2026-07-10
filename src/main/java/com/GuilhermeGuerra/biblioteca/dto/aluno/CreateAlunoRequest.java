@@ -17,9 +17,6 @@ public record CreateAlunoRequest(
     String telefone,
 
     @NotBlank(message = "O nome é obrigatório")
-    String matricula,
-
-    @NotBlank(message = "O nome é obrigatório")
     String curso,
 
     @NotNull(message = "O período é obrigatório.")

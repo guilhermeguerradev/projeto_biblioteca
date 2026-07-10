@@ -8,7 +8,7 @@ import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.aluno.AlunoResponse;
 import com.GuilhermeGuerra.biblioteca.entity.Aluno;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
-import com.GuilhermeGuerra.biblioteca.exceptions.AlunoNotFoundException;
+import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.AlunoRepository;
 import com.GuilhermeGuerra.biblioteca.specification.AlunoSpecification;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class AlunoService {
 
     @Transactional(readOnly = true)
     public AlunoResponse findById(Long id) {
-        Aluno aluno = alunoRepository.findById(id).orElseThrow(()-> new AlunoNotFoundException("Aluno não encontrado"));
+        Aluno aluno = alunoRepository.findById(id).orElseThrow(()-> new NotFoundException("Aluno não encontrado"));
         return AlunoResponse.fromEntity(aluno);
     }
 
@@ -52,16 +52,17 @@ public class AlunoService {
     @Transactional
     public AlunoResponse create(CreateAlunoRequest request) {
 
-        CreateUsuarioRequest usuarioDto = new CreateUsuarioRequest(
-                request.nome(),
-                request.email(),
-                request.senha(),
-                request.telefone()
-        );
+        CreateUsuarioRequest usuarioDto = CreateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         Usuario usuario = usuarioService.criarUsuarioBase(usuarioDto);
 
         Aluno aluno = Aluno.builder()
+                .id(usuario.getId())
                 .usuario(usuario)
                 .matricula(gerarMatricula())
                 .curso(request.curso())
@@ -78,7 +79,7 @@ public class AlunoService {
     public AlunoResponse update(Long id,UpdateAlunoRequest request) {
 
         Aluno aluno = alunoRepository.findById(id)
-                .orElseThrow(()-> new AlunoNotFoundException("Aluno não encontrado"));
+                .orElseThrow(()-> new NotFoundException("Aluno não encontrado"));
 
         if(request.periodo() != null && request.periodo() > 0) {
             aluno.setPeriodo(request.periodo());
@@ -88,23 +89,21 @@ public class AlunoService {
             aluno.setCurso(request.curso());
         }
 
-        UpdateUsuarioRequest usuarioDto = new UpdateUsuarioRequest(
-                request.nome(),
-                request.email(),
-                request.senha(),
-                request.telefone()
-        );
+        UpdateUsuarioRequest usuarioDto = UpdateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         usuarioService.update(id, usuarioDto);
-
-        alunoRepository.save(aluno);
 
         return AlunoResponse.fromEntity(aluno);
 
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void desativar(Long id) {
         usuarioService.desativar(id);
     }
 

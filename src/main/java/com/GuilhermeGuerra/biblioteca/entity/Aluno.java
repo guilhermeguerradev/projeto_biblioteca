@@ -20,12 +20,12 @@ public class Aluno {
     @JoinColumn(name ="id")
     private Usuario usuario;
 
-    @JoinColumn(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String matricula;
 
     private String curso;
 
-    @JoinColumn(nullable = false)
+    @Column(nullable = false)
     private byte periodo;
 
 }
