@@ -12,9 +12,7 @@ public record CreateEmprestimoRequest(
         Long colaboradorId,
 
         @NotNull(message = "O ID do exemplar é obrigatório")
-        Long exemplarId,
-
-        StatusEmprestimo status
+        Long livroId
 
 ) {
 }
