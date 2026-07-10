@@ -8,7 +8,6 @@ import com.GuilhermeGuerra.biblioteca.dto.usuario.CreateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.dto.usuario.UpdateUsuarioRequest;
 import com.GuilhermeGuerra.biblioteca.entity.Colaborador;
 import com.GuilhermeGuerra.biblioteca.entity.Usuario;
-import com.GuilhermeGuerra.biblioteca.exceptions.ColaboradorNotFoundException;
 import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.ColaboradorRepository;
 import com.GuilhermeGuerra.biblioteca.specification.ColaboradorSpecification;
@@ -57,17 +56,17 @@ public class ColaboradorService {
     @Transactional
     public ColaboradorResponse create(CreateColaboradorRequest request) {
 
-
-        CreateUsuarioRequest usuarioDto = new CreateUsuarioRequest(
-                request.nome(),
-                request.email(),
-                request.senha(),
-                request.telefone()
-        );
+        CreateUsuarioRequest usuarioDto = CreateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         Usuario usuario = usuarioService.criarUsuarioBase(usuarioDto);
 
         Colaborador colaborador = Colaborador.builder()
+                .id(usuario.getId())
                 .usuario(usuario)
                 .setor(request.setor())
                 .cargo(request.cargo())
@@ -80,7 +79,7 @@ public class ColaboradorService {
     }
 
     @Transactional
-    public ColaboradorResponse update(Long id,UpdateColaboradorRequest request) {
+    public ColaboradorResponse update(Long id, UpdateColaboradorRequest request) {
         Colaborador colaborador = findByIdOrElseThrow(id);
 
         if(request.cargo() != null) {
@@ -91,22 +90,20 @@ public class ColaboradorService {
             colaborador.setSetor(request.setor());
         }
 
-        UpdateUsuarioRequest usuarioDto = new UpdateUsuarioRequest(
-                request.nome(),
-                request.telefone(),
-                request.senha(),
-                request.email()
-        );
+        UpdateUsuarioRequest usuarioDto = UpdateUsuarioRequest.builder()
+                .nome(request.nome())
+                .email(request.email())
+                .senha(request.senha())
+                .telefone(request.telefone())
+                .build();
 
         usuarioService.update(id,usuarioDto);
 
-        Colaborador updatedColaborador = colaboradorRepository.save(colaborador);
-
-        return ColaboradorResponse.fromEntity(updatedColaborador);
+        return ColaboradorResponse.fromEntity(colaborador);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void desativar(Long id) {
         usuarioService.desativar(id);
     }
 }

@@ -4,23 +4,27 @@ import com.GuilhermeGuerra.biblioteca.entity.Colaborador;
 import com.GuilhermeGuerra.biblioteca.entity.enums.Cargo;
 import com.GuilhermeGuerra.biblioteca.entity.enums.Setor;
 
+import java.time.LocalDate;
+
 public record ColaboradorResponse (
         Long id,
         String nome,
-        String senha,
+        String email,
         String telefone,
         Cargo cargo,
-        Setor setor
+        Setor setor,
+        LocalDate dataAdmissao
 
 ){
     public static ColaboradorResponse fromEntity(Colaborador colaborador) {
         return new ColaboradorResponse(
                 colaborador.getId(),
                 colaborador.getUsuario().getNome(),
-                colaborador.getUsuario().getSenha(),
+                colaborador.getUsuario().getEmail(),
                 colaborador.getUsuario().getTelefone(),
                 colaborador.getCargo(),
-                colaborador.getSetor()
+                colaborador.getSetor(),
+                colaborador.getDataAdmissao()
         );
     }
 }
