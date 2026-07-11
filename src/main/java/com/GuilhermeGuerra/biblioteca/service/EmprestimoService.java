@@ -140,9 +140,11 @@ public class EmprestimoService {
                     .build();
 
             emprestimo.setMulta(multa);
+        } else {
+            emprestimo.setStatus(StatusEmprestimo.FINALIZADO);
+
         }
 
-        emprestimo.setStatus(StatusEmprestimo.FINALIZADO);
         return EmprestimoResponse.fromEntity(emprestimo);
     }
 
