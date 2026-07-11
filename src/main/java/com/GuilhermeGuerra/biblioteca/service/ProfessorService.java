@@ -54,7 +54,7 @@ public class ProfessorService {
     }
 
     @Transactional
-    ProfessorResponse update(Long id, UpdateProfessorRequest request) {
+    public ProfessorResponse update(Long id, UpdateProfessorRequest request) {
         Professor professor = professorRepository.findById(id)
                 .orElseThrow(()-> new NotFoundException("Professor não encontrado."));
 

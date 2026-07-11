@@ -94,6 +94,12 @@ public class ExemplarService {
     }
 
     @Transactional
+    public void marcarComoDisponivelPorLivro(Long livroId) {
+        repository.findFirstByLivroIdAndStatus(livroId, StatusExemplar.RESERVADO)
+                .ifPresent(exemplar -> exemplar.setStatus(StatusExemplar.DISPONIVEL));
+    }
+
+    @Transactional
     public void descartar(Long id) {
         Exemplar exemplar = findByIdOrElseThrow(id);
 

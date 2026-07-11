@@ -12,7 +12,6 @@ import com.GuilhermeGuerra.biblioteca.entity.enums.StatusReserva;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.EmprestimoRepository;
-import com.GuilhermeGuerra.biblioteca.repository.ExemplarRepository;
 import com.GuilhermeGuerra.biblioteca.repository.LivroRepository;
 import com.GuilhermeGuerra.biblioteca.repository.ReservaRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,6 @@ public class ReservaService {
     private final UsuarioService usuarioService;
     private final LivroService livroService;
     private final ExemplarService exemplarService;
-    private final ExemplarRepository exemplarRepository;
     private final EmprestimoRepository emprestimoRepository;
     private final LivroRepository livroRepository;
 
@@ -147,16 +145,43 @@ public class ReservaService {
     }
 
     private void passarLivroParaProximoOuLiberarEstante(Long livroId) {
+        boolean promovida = promoverProximaReservaAtiva(livroId);
+
+        if (!promovida) {
+            exemplarService.marcarComoDisponivelPorLivro(livroId);
+        }
+    }
+
+    @Transactional
+    public boolean promoverProximaReservaAtiva(Long livroId) {
         Optional<Reserva> proximoDaFilaOpt = reservaRepository
                 .findFirstByLivroIdAndStatusOrderByDataReservaAsc(livroId, StatusReserva.ATIVA);
 
-        if (proximoDaFilaOpt.isPresent()) {
-            Reserva proximaReserva = proximoDaFilaOpt.get();
-            proximaReserva.setStatus(StatusReserva.AGUARDANDO_RETIRADA);
-            proximaReserva.setDataLiberacao(LocalDateTime.now());
+        if (proximoDaFilaOpt.isEmpty()) {
+            return false;
+        }
+
+        Reserva proximaReserva = proximoDaFilaOpt.get();
+        proximaReserva.setStatus(StatusReserva.AGUARDANDO_RETIRADA);
+        proximaReserva.setDataLiberacao(LocalDateTime.now());
+        return true;
+    }
+
+    @Transactional
+    public void resolverReservaNoBalcao(Long livroId, Long usuarioId) {
+        Reserva reserva = reservaRepository
+                .findFirstByLivroIdAndStatusOrderByDataReservaAsc(livroId, StatusReserva.AGUARDANDO_RETIRADA)
+                .orElseThrow(() -> new BusinessException("Inconsistência: Livro marcado como reservado, mas nenhuma reserva foi encontrada."));
+
+        boolean ehOProprioDono = reserva.getUsuario().getId().equals(usuarioId);
+        boolean prazoExpirou = reserva.getDataLiberacao().isBefore(LocalDateTime.now().minusDays(3));
+
+        if (ehOProprioDono) {
+            reserva.setStatus(StatusReserva.FINALIZADA);
+        } else if (prazoExpirou) {
+            reserva.setStatus(StatusReserva.EXPIRADA);
         } else {
-            exemplarRepository.findFirstByLivroIdAndStatus(livroId, StatusExemplar.RESERVADO)
-                    .ifPresent(exemplar -> exemplar.setStatus(StatusExemplar.DISPONIVEL));
+            throw new BusinessException("Este livro está reservado para outro usuário dentro do prazo de 3 dias.");
         }
     }
 }

@@ -4,18 +4,15 @@ import com.GuilhermeGuerra.biblioteca.dto.emprestimo.CreateEmprestimoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.emprestimo.EmprestimoResponse;
 import com.GuilhermeGuerra.biblioteca.dto.emprestimo.FinalizarEmprestimoRequest;
 import com.GuilhermeGuerra.biblioteca.dto.emprestimo.UpdateEmprestimoRequest;
-import com.GuilhermeGuerra.biblioteca.dto.exemplar.UpdateExemplarRequest;
 import com.GuilhermeGuerra.biblioteca.entity.*;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusEmprestimo;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusExemplar;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusMulta;
-import com.GuilhermeGuerra.biblioteca.entity.enums.StatusReserva;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
 import com.GuilhermeGuerra.biblioteca.repository.EmprestimoRepository;
 import com.GuilhermeGuerra.biblioteca.repository.ExemplarRepository;
 import com.GuilhermeGuerra.biblioteca.repository.LivroRepository;
-import com.GuilhermeGuerra.biblioteca.repository.ReservaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,23 +21,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class EmprestimoService {
 
     private final EmprestimoRepository repository;
-
     private final UsuarioService usuarioService;
-
     private final ColaboradorService colaboradorService;
-
-    private final ReservaRepository reservaRepository;
-
+    private final ReservaService reservaService;
     private final ExemplarRepository exemplarRepository;
-    private final ExemplarService exemplarService;
-
     private final LivroService livroService;
 
     @Transactional
@@ -56,7 +46,7 @@ public class EmprestimoService {
                 .orElseThrow(() -> new NotFoundException("Não há exemplares disponíveis para este livro."));
 
         if(exemplar.getStatus() == StatusExemplar.RESERVADO) {
-            processarReservaNoBalcao(livro.getId(), usuario.getId());
+            reservaService.resolverReservaNoBalcao(livro.getId(), usuario.getId());
         }
         exemplar.setStatus(StatusExemplar.EMPRESTADO);
 
@@ -83,19 +73,16 @@ public class EmprestimoService {
         Emprestimo emprestimo = findByIdOrElseThrow(id);
 
         if(request.status() != null && request.status() != emprestimo.getStatus()) {
-                emprestimo.setStatus(request.status());
 
-                if(request.status() == StatusEmprestimo.DEVOLVIDO && emprestimo.getDataDevolucao() == null) {
-                    emprestimo.setDataDevolucao(LocalDateTime.now());
-                }
+            if(request.status() == StatusEmprestimo.DEVOLVIDO || request.status() == StatusEmprestimo.FINALIZADO) {
+                throw new BusinessException("Para devolver ou finalizar um empréstimo, utilize o fluxo de devolução (finalizarEmprestimo).");
             }
 
-        if(request.dataDevolucao() != null) {
-            emprestimo.setDataDevolucao(request.dataDevolucao());
-
-            if(emprestimo.getStatus() != StatusEmprestimo.DEVOLVIDO) {
-                emprestimo.setStatus(StatusEmprestimo.DEVOLVIDO);
+            if(emprestimo.getStatus() == StatusEmprestimo.DEVOLVIDO || emprestimo.getStatus() == StatusEmprestimo.FINALIZADO) {
+                throw new BusinessException("Não é possível alterar o status de um empréstimo já devolvido ou finalizado.");
             }
+
+            emprestimo.setStatus(request.status());
         }
 
         return EmprestimoResponse.fromEntity(emprestimo);
@@ -176,17 +163,8 @@ public class EmprestimoService {
         if(statusExemplar == StatusExemplar.DANIFICADO || statusExemplar == StatusExemplar.EXTRAVIADO) {
             exemplar.setStatus(statusExemplar);
         } else {
-            Optional<Reserva> proximaReservaOpt = reservaRepository
-                    .findFirstByLivroIdAndStatusOrderByDataReservaAsc(exemplar.getLivro().getId(), StatusReserva.ATIVA);
-
-            if (proximaReservaOpt.isPresent()) {
-                Reserva reservaGanhadora = proximaReservaOpt.get();
-                reservaGanhadora.setStatus(StatusReserva.AGUARDANDO_RETIRADA);
-                reservaGanhadora.setDataLiberacao(LocalDateTime.now());
-                exemplar.setStatus(StatusExemplar.RESERVADO);
-            } else {
-                exemplar.setStatus(StatusExemplar.DISPONIVEL);
-            }
+            boolean promovida = reservaService.promoverProximaReservaAtiva(exemplar.getLivro().getId());
+            exemplar.setStatus(promovida ? StatusExemplar.RESERVADO : StatusExemplar.DISPONIVEL);
         }
         return emprestimo;
     }
@@ -197,22 +175,6 @@ public class EmprestimoService {
         }
         if (repository.countByUsuarioIdAndStatus(usuarioId, StatusEmprestimo.ATIVO) >= 3) {
             throw new BusinessException("O usuário atingiu o limite de 3 empréstimos ativos.");
-        }
-    }
-
-    private void processarReservaNoBalcao(Long livroId, Long usuarioId) {
-        Reserva reserva = reservaRepository.findFirstByLivroIdAndStatusOrderByDataReservaAsc(livroId, StatusReserva.AGUARDANDO_RETIRADA)
-                .orElseThrow(() -> new BusinessException("Inconsistência: Livro marcado como reservado, mas nenhuma reserva foi encontrada."));
-
-        boolean ehOProprioDono = reserva.getUsuario().getId().equals(usuarioId);
-        boolean prazoExpirou = reserva.getDataLiberacao().isBefore(LocalDateTime.now().minusDays(3));
-
-        if (ehOProprioDono) {
-            reserva.setStatus(StatusReserva.FINALIZADA);
-        } else if (prazoExpirou) {
-            reserva.setStatus(StatusReserva.EXPIRADA);
-        } else {
-            throw new BusinessException("Este livro está reservado para outro usuário dentro do prazo de 3 dias.");
         }
     }
 

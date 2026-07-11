@@ -15,7 +15,8 @@ create table emprestimo(
                'ATIVO',
                'DEVOLVIDO',
                'ATRASADO',
-               'CANCELADO'
+               'CANCELADO',
+               'FINALIZADO'
         )),
 
 
