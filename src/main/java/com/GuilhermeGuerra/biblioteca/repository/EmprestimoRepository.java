@@ -6,9 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface EmprestimoRepository extends JpaRepository<Emprestimo,Long> {
 
     int countByUsuarioIdAndStatus(Long usuarioId, StatusEmprestimo status);
+
+    boolean existsByUsuarioIdAndStatus(Long usuarioId, StatusEmprestimo status);
+
+    List<Emprestimo> findAllByStatusAndDataPrevistaBefore(StatusEmprestimo status, LocalDateTime limite);
 
     @Query("SELECT COUNT(emp) > 0 " +
             "FROM Emprestimo emp " +

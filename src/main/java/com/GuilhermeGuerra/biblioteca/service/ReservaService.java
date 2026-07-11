@@ -81,6 +81,10 @@ public class ReservaService {
             throw new BusinessException("O Usuário possui multas pendentes no sistema.");
         }
 
+        if(emprestimoRepository.existsByUsuarioIdAndStatus(request.usuarioId(), StatusEmprestimo.ATRASADO)) {
+            throw new BusinessException("O Usuário possui empréstimos atrasados no sistema.");
+        }
+
         Reserva reserva = Reserva.builder()
                 .livro(livro)
                 .usuario(usuario)
@@ -165,6 +169,11 @@ public class ReservaService {
         proximaReserva.setStatus(StatusReserva.AGUARDANDO_RETIRADA);
         proximaReserva.setDataLiberacao(LocalDateTime.now());
         return true;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existeReservaAtivaParaLivro(Long livroId) {
+        return reservaRepository.existsByLivroIdAndStatus(livroId, StatusReserva.ATIVA);
     }
 
     @Transactional

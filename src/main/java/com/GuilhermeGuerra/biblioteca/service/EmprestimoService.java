@@ -14,6 +14,7 @@ import com.GuilhermeGuerra.biblioteca.repository.EmprestimoRepository;
 import com.GuilhermeGuerra.biblioteca.repository.ExemplarRepository;
 import com.GuilhermeGuerra.biblioteca.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,10 @@ public class EmprestimoService {
 
         Exemplar exemplar = exemplarRepository.findFirstByLivroIdAndStatusIn(livro.getId(), List.of(StatusExemplar.DISPONIVEL, StatusExemplar.RESERVADO))
                 .orElseThrow(() -> new NotFoundException("Não há exemplares disponíveis para este livro."));
+
+        if (this.repository.usuarioJaPossuiOLivroEmprestado(usuario.getId(), livro.getId())) {
+            throw new BusinessException("Não é possível fazer empréstimo de um livro que você já possui um empréstimo ativo.");
+        }
 
         if(exemplar.getStatus() == StatusExemplar.RESERVADO) {
             reservaService.resolverReservaNoBalcao(livro.getId(), usuario.getId());
@@ -100,6 +105,15 @@ public class EmprestimoService {
 
         if(emprestimo.getStatus() != StatusEmprestimo.ATIVO) {
             throw new BusinessException("Não é possível renovar empréstimo que não está ativo");
+        }
+
+        if(emprestimo.getDataPrevista().isBefore(LocalDateTime.now())) {
+            throw new BusinessException("Não é possível renovar um empréstimo atrasado. Efetue a devolução.");
+        }
+
+        Long livroId = emprestimo.getExemplar().getLivro().getId();
+        if(reservaService.existeReservaAtivaParaLivro(livroId)) {
+            throw new BusinessException("Não é possível renovar: existe uma reserva ativa aguardando este livro.");
         }
 
         emprestimo.setQuantidadeRenovacoes(quantidadeRenovacoes + 1);
@@ -175,8 +189,22 @@ public class EmprestimoService {
         if (repository.possuiMultasPendentes(usuarioId)) {
             throw new BusinessException("O usuário possui multas pendentes.");
         }
+        if (repository.existsByUsuarioIdAndStatus(usuarioId, StatusEmprestimo.ATRASADO)) {
+            throw new BusinessException("O usuário possui empréstimos atrasados.");
+        }
         if (repository.countByUsuarioIdAndStatus(usuarioId, StatusEmprestimo.ATIVO) >= 3) {
             throw new BusinessException("O usuário atingiu o limite de 3 empréstimos ativos.");
+        }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void marcarEmprestimosAtrasados() {
+        List<Emprestimo> emprestimosVencidos = repository.findAllByStatusAndDataPrevistaBefore(
+                StatusEmprestimo.ATIVO, LocalDateTime.now());
+
+        for (Emprestimo emprestimo : emprestimosVencidos) {
+            emprestimo.setStatus(StatusEmprestimo.ATRASADO);
         }
     }
 
