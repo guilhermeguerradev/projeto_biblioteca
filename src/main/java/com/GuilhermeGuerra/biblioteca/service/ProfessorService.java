@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProfessorService {
@@ -24,6 +26,17 @@ public class ProfessorService {
     private final UsuarioService usuarioService;
 
 
+
+    @Transactional(readOnly = true)
+    public List<ProfessorResponse> findAll() {
+        return professorRepository.findAll().stream().map(ProfessorResponse::fromEntity).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ProfessorResponse findById(Long id) {
+        Professor professor = this.professorRepository.findById(id).orElseThrow(() -> new NotFoundException(("Professor não encontrado.")));
+        return ProfessorResponse.fromEntity(professor);
+    }
 
     @Transactional
     public ProfessorResponse create(CreateProfessorRequest request) {

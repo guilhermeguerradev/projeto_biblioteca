@@ -13,6 +13,7 @@ import com.GuilhermeGuerra.biblioteca.repository.AlunoRepository;
 import com.GuilhermeGuerra.biblioteca.specification.AlunoSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +30,10 @@ public class AlunoService {
     private final UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
-    public Page<AlunoResponse> listarComFiltros(FilterAlunoRequest filter) {
+    public Page<AlunoResponse> listarComFiltros(FilterAlunoRequest filter, Pageable pageable) {
         Specification<Aluno> aluno = AlunoSpecification.comFiltros(filter);
 
-        Page<Aluno> paginaAlunos = alunoRepository.findAll(aluno, filter.toPageable("usuario.nome"));
+        Page<Aluno> paginaAlunos = alunoRepository.findAll(aluno, pageable);
 
         return paginaAlunos.map(AlunoResponse::fromEntity);
     }

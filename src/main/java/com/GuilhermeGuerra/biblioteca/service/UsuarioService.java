@@ -96,7 +96,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado com o ID: " + id));
         if (!usuario.isAtivo()) {
-            throw new BusinessException("Este usuário já se encontra desativado no sistema.");
+            return;
         }
         boolean possuiPendencias = usuario.getEmprestimos().stream()
                 .anyMatch(emprestimo -> emprestimo.getDataDevolucao() == null);
@@ -105,7 +105,6 @@ public class UsuarioService {
             throw new BusinessException("Não é possível desativar o usuário pois ele possui empréstimos pendentes de devolução.");
         }
         usuario.setAtivo(false);
-
         usuarioRepository.save(usuario);
     }
 

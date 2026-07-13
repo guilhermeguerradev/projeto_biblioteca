@@ -13,6 +13,7 @@ import com.GuilhermeGuerra.biblioteca.repository.ColaboradorRepository;
 import com.GuilhermeGuerra.biblioteca.specification.ColaboradorSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +30,11 @@ public class ColaboradorService {
 
 
     @Transactional(readOnly = true)
-    public Page<ColaboradorResponse> listarComFiltros(FilterColaboradorRequest filter) {
+    public Page<ColaboradorResponse> listarComFiltros(FilterColaboradorRequest filter, Pageable pageable) {
 
         Specification<Colaborador> colaborador = ColaboradorSpecification.comFiltros(filter);
 
-        Page<Colaborador> paginasColaborador = colaboradorRepository.findAll(colaborador, filter.toPageable("usuario.nome"));
+        Page<Colaborador> paginasColaborador = colaboradorRepository.findAll(colaborador, pageable);
 
         return paginasColaborador.map(ColaboradorResponse::fromEntity);
     }
