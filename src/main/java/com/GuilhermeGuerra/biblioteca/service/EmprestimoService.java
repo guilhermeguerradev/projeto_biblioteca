@@ -14,6 +14,7 @@ import com.GuilhermeGuerra.biblioteca.repository.EmprestimoRepository;
 import com.GuilhermeGuerra.biblioteca.repository.ExemplarRepository;
 import com.GuilhermeGuerra.biblioteca.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,17 @@ public class EmprestimoService {
     private final ReservaService reservaService;
     private final ExemplarRepository exemplarRepository;
     private final LivroService livroService;
+
+    @Transactional(readOnly = true)
+    public EmprestimoResponse findById(Long id) {
+        Emprestimo emprestimo = this.findByIdOrElseThrow(id);
+        return EmprestimoResponse.fromEntity(emprestimo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmprestimoResponse> findAll() {
+        return repository.findAll().stream().map(EmprestimoResponse::fromEntity).toList();
+    }
 
     @Transactional
     public EmprestimoResponse create(CreateEmprestimoRequest request) {
@@ -79,8 +91,9 @@ public class EmprestimoService {
 
         if(request.status() != null && request.status() != emprestimo.getStatus()) {
 
-            if(request.status() == StatusEmprestimo.DEVOLVIDO || request.status() == StatusEmprestimo.FINALIZADO) {
-                throw new BusinessException("Para devolver ou finalizar um empréstimo, utilize o fluxo de devolução (finalizarEmprestimo).");
+            if(request.status() == StatusEmprestimo.DEVOLVIDO || request.status() == StatusEmprestimo.FINALIZADO
+                    || request.status() == StatusEmprestimo.CANCELADO) {
+                throw new BusinessException("Não é possível definir este status diretamente. Utilize o fluxo de devolução (finalizarEmprestimo) para devolver/finalizar; cancelamento de empréstimo ainda não possui um fluxo dedicado.");
             }
 
             if(emprestimo.getStatus() == StatusEmprestimo.DEVOLVIDO || emprestimo.getStatus() == StatusEmprestimo.FINALIZADO) {
@@ -208,7 +221,7 @@ public class EmprestimoService {
         }
     }
 
-    public Emprestimo findByIdOrElseThrow(Long id) {
+    private Emprestimo findByIdOrElseThrow(Long id) {
         return this.repository.findById(id).orElseThrow(() -> new NotFoundException("Empréstimo não encontrado"));
     }
 }

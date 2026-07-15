@@ -1,13 +1,9 @@
 package com.GuilhermeGuerra.biblioteca.service;
 
-import com.GuilhermeGuerra.biblioteca.dto.exemplar.UpdateExemplarRequest;
 import com.GuilhermeGuerra.biblioteca.dto.reserva.CreateReservaRequest;
 import com.GuilhermeGuerra.biblioteca.dto.reserva.ReservaResponse;
-import com.GuilhermeGuerra.biblioteca.dto.reserva.UpdateReservaRequest;
 import com.GuilhermeGuerra.biblioteca.entity.*;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusEmprestimo;
-import com.GuilhermeGuerra.biblioteca.entity.enums.StatusExemplar;
-import com.GuilhermeGuerra.biblioteca.entity.enums.StatusMulta;
 import com.GuilhermeGuerra.biblioteca.entity.enums.StatusReserva;
 import com.GuilhermeGuerra.biblioteca.exceptions.BusinessException;
 import com.GuilhermeGuerra.biblioteca.exceptions.NotFoundException;
@@ -98,39 +94,21 @@ public class ReservaService {
     }
 
     @Transactional
-    public ReservaResponse update(Long id,UpdateReservaRequest request) {
+    public ReservaResponse cancelar(Long id) {
         Reserva reserva = findByIdOrElseThrow(id);
 
-        if (reserva.getStatus() == StatusReserva.FINALIZADA
-                || reserva.getStatus() == StatusReserva.CANCELADA || reserva.getStatus() == StatusReserva.EXPIRADA) {
-            throw new BusinessException("Não é possível alterar o status de uma reserva que já foi finalizada ou cancelada.");
+        if (reserva.getStatus() == StatusReserva.FINALIZADA ||
+                reserva.getStatus() == StatusReserva.CANCELADA ||
+                reserva.getStatus() == StatusReserva.EXPIRADA) {
+            throw new BusinessException("Não é possível cancelar uma reserva que já foi finalizada, cancelada ou expirada.");
         }
 
-        if(request.status() == StatusReserva.CANCELADA) {
-            if(reserva.getStatus() == StatusReserva.AGUARDANDO_RETIRADA) {
-                passarLivroParaProximoOuLiberarEstante(reserva.getLivro().getId());
-            }
-            reserva.setStatus(StatusReserva.CANCELADA);
-        } else if (request.status() != null && request.status() != reserva.getStatus()) {
-            reserva.setStatus(request.status());
+        if (reserva.getStatus() == StatusReserva.AGUARDANDO_RETIRADA) {
+            passarLivroParaProximoOuLiberarEstante(reserva.getLivro().getId());
         }
 
+        reserva.setStatus(StatusReserva.CANCELADA);
         return ReservaResponse.fromEntity(reserva);
-
-    }
-
-    @Transactional
-    public void expirar(Long id) {
-        Reserva reserva = findByIdOrElseThrow(id);
-
-        if (reserva.getStatus() == StatusReserva.FINALIZADA || reserva.getStatus() == StatusReserva.CANCELADA) {
-            throw new BusinessException("Não é possível expirar uma reserva que já foi finalizada ou cancelada.");
-        }
-        if (reserva.getStatus() == StatusReserva.EXPIRADA) {
-            throw new BusinessException("Esta reserva já se encontra expirada.");
-        }
-
-        reserva.setStatus(StatusReserva.EXPIRADA);
     }
 
     @Transactional

@@ -104,7 +104,7 @@ public class ExemplarService {
         Exemplar exemplar = findByIdOrElseThrow(id);
 
         if (exemplar.getStatus() == StatusExemplar.DESCARTADO) {
-            throw new BusinessException("Este exemplar já se encontra descartado no sistema.");
+            return;
         }
 
         if (exemplar.getStatus() == StatusExemplar.RESERVADO ||

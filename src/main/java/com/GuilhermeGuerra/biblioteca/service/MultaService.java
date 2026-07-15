@@ -24,10 +24,7 @@ import java.util.List;
 @Service
 public class MultaService {
 
-
     private final MultaRepository multaRepository;
-
-
 
     @Transactional(readOnly = true)
     public Multa findByIdOrElseThrow(Long id) {
